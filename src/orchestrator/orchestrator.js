@@ -1,23 +1,23 @@
 const ArchitectAgent = require('../agents/architectAgent')
-const FshGeneratorAgent = require('../agents/fshGeneratorAgent')
+const FshAuthorAgent = require('../agents/fshAuthorAgent')
 const SushiCompiler = require('../compiler/sushiCompiler')
 
 class Orchestrator {
 
     constructor() {
         this.architect = new ArchitectAgent();
-        this.fshgenerator = new FshGeneratorAgent();
-        this.sushicompiler = new SushiCompiler();
+        this.fshAuthor = new FshAuthorAgent();
+        this.sushiTool = new SushiCompiler();
     }
 
     async run(patientJson) {
-        const specification = await this.architect.generateSpecification(patientJson);
-        console.log('\n\n[2/5] Generated Profile Specification');
-        console.log( JSON.stringify(specification, null, 2) );
-        const fsh = await this.fshgenerator.generateFSH(specification);
-        const compilerOutput = await this.sushicompiler.compile(fsh)
+        const profileDesign = await this.architect.createProfileDesign(patientJson);
+        console.log('\n\n[2/5] Generated Profile Design');
+        console.log( JSON.stringify(profileDesign, null, 2) );
+        const fsh = await this.fshAuthor.authorFsh(profileDesign);
+        const compilationResult = await this.sushiTool.compile(fsh)
 
-        return compilerOutput;
+        return compilationResult;
     }
 }
 
