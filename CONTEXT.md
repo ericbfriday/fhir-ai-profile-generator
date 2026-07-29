@@ -86,10 +86,15 @@ _Avoid_: output file (too vague), resource (collides with FHIR Resource)
 The Orchestrator's iterative control flow: compile, inspect Diagnostics, invoke the Repair Agent, recompile. Repeats until compilation succeeds or a maximum iteration count is reached.
 _Avoid_: feedback loop (too generic), retry (implies same input, not fixed input)
 
-### Future Protocols
+### Protocols
 
 **MCP**:
 Model Context Protocol. A protocol that allows LLMs to invoke external tools. Future iterations will expose the Pipeline's Tools as MCP servers. ⚠️ *Future scope.*
 
 **ACP**:
-Agent Communication Protocol. A protocol for multi-agent collaboration. Future iterations will use ACP to enable Agents to negotiate and coordinate. ⚠️ *Future scope.*
+Agent Client Protocol. An open standard (Zed/JetBrains, 2025–present) that standardizes communication between code editors and AI coding agents over stdio JSON-RPC 2.0. The Pipeline uses ACP to route LLM completions through subscription-billed coding agents (Kiro CLI, Claude Agent, Codex, Antigravity, OpenCode) without requiring API keys.
+_Avoid_: confusing with the defunct "Agent Communication Protocol" (IBM/BeeAI, merged into A2A in Aug 2025)
+
+**ACP Adapter**:
+The shared transport layer that manages JSON-RPC communication with ACP agent subprocesses. Spawns a process, initializes a session, sends prompts, and collects streamed responses. Used by all ACP Provider implementations.
+_Avoid_: calling it a client (ambiguous with ACP client/server terminology)
