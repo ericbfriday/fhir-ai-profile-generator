@@ -9,13 +9,13 @@ async function main() {
             '=========================================================')
         const orchestrator = new Orchestrator();
         const patient = require('../examples/patient.json');
-        const result = await orchestrator.run(patient);
-        if(result.success) {
+        const compilationResult = await orchestrator.run(patient);
+        if(compilationResult.success) {
             console.log("\n\n[5/5] Pipeline Summary\n");
-            console.log("Success :", result.success);
+            console.log("Success :", compilationResult.success);
             console.log("\nGenerated Artifacts:");
             console.log("-------------------");
-            result.artifacts.forEach(file => {
+            compilationResult.artifacts.forEach(file => {
                 console.log(" -", file);
             });
             console.log('\n\nGenerated Files:');
@@ -28,8 +28,8 @@ async function main() {
         }
         else {
             console.log("\n\n[5/5] Pipeline Failure");
-            console.log('Success :', result.success );
-            console.log(result.errors);
+            console.log('Success :', compilationResult.success );
+            console.log(compilationResult.diagnostics);
         }
     } catch (error) {
         console.log(error);

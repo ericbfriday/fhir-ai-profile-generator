@@ -5,7 +5,7 @@ const util = require('util');
 const fs = require('fs');
 const path = require('path');
 
-const CompilerOutput = require("../models/compilerOutput");
+const CompilationResult = require("../models/compilationResult");
 
 const execPromise = util.promisify(exec);
 
@@ -16,7 +16,7 @@ class SushiCompiler {
 
         const sushiProjectPath = path.join(
             __dirname,
-            "../..//sushi-project"
+            "../../sushi-project"
         );
 
         const fshPath = path.join(
@@ -38,14 +38,14 @@ class SushiCompiler {
             );
             const artifacts = this.discoverArtifacts(sushiProjectPath);
             this.saveExecutionLogs(fshInput, stdout, stderr);
-            return new CompilerOutput(true, stdout, stderr, artifacts);
+            return new CompilationResult(true, stdout, stderr, artifacts);
         } catch (error) {
             this.saveExecutionLogs(fshInput, error.stdout, error.stderr);
-            return new CompilerOutput(false, error.stdout, error.stderr);
+            return new CompilationResult(false, error.stdout, error.stderr);
         }
     }
 
-    // Find generated artifacts for compileroutput
+    // Find generated artifacts for compilation result
     discoverArtifacts(sushiProjectPath) {
         const artifactPath = path.join( sushiProjectPath, 'fsh-generated/resources');
         if (!fs.existsSync(artifactPath)) {

@@ -1,6 +1,6 @@
 class ArchitectAgent {
 
-    async generateSpecification(patientJson) {
+    async createProfileDesign(patientJson) {
         console.log('\n\n[1/5] Architect Agent');
         console.log('Received - ', patientJson.resourceType);
 
