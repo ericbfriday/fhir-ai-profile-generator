@@ -1,11 +1,12 @@
-// This will create a .fsh file that can be used as input for SUSHI in the future
+// SUSHI compiler Tool — mechanically executes SUSHI and captures its output.
 
-const {exec} = require('child_process');
+const { exec } = require('child_process');
 const util = require('util');
 const fs = require('fs');
 const path = require('path');
 
 const CompilationResult = require("../models/compilationResult");
+const { parseDiagnostics } = require("../models/diagnostic");
 
 const execPromise = util.promisify(exec);
 
@@ -30,30 +31,33 @@ class SushiCompiler {
         );
 
         try {
-            const {stdout, stderr } = await execPromise(
+            const { stdout, stderr } = await execPromise(
                 'npx sushi .',
                 {
                     cwd: sushiProjectPath,
                 }
             );
             const artifacts = this.discoverArtifacts(sushiProjectPath);
+            const diagnostics = parseDiagnostics(stdout + '\n' + stderr);
             this.saveExecutionLogs(fshInput, stdout, stderr);
-            return new CompilationResult(true, stdout, stderr, artifacts);
+            return new CompilationResult(true, stdout, stderr, diagnostics, artifacts);
         } catch (error) {
-            this.saveExecutionLogs(fshInput, error.stdout, error.stderr);
-            return new CompilationResult(false, error.stdout, error.stderr);
+            const stdout = error.stdout || '';
+            const stderr = error.stderr || '';
+            const diagnostics = parseDiagnostics(stdout + '\n' + stderr);
+            this.saveExecutionLogs(fshInput, stdout, stderr);
+            return new CompilationResult(false, stdout, stderr, diagnostics);
         }
     }
 
-    // Find generated artifacts for compilation result
+    // Find generated Artifacts for Compilation Result
     discoverArtifacts(sushiProjectPath) {
-        const artifactPath = path.join( sushiProjectPath, 'fsh-generated/resources');
+        const artifactPath = path.join(sushiProjectPath, 'fsh-generated/resources');
         if (!fs.existsSync(artifactPath)) {
             return [];
         }
         return fs.readdirSync(artifactPath)
             .filter(file => file.endsWith('.json'));
-
     }
 
     saveExecutionLogs(fshInput, stdout, stderr) {
